@@ -1,11 +1,12 @@
 const jsonServer = require("json-server");
 const qs = require("qs");
 const server = jsonServer.create();
+const path = require("path");
+const fs = require("fs");
 const router = jsonServer.router(
   JSON.parse(fs.readFileSync(path.join("db.json")))
 );
 const middlewares = jsonServer.defaults();
-const path = require("path");
 // const multer = require("multer");
 
 // const upload = multer({ dest: "uploads/" });
