@@ -12,6 +12,13 @@ server.get("/echo", (req, res) => {
   res.jsonp(req.query);
 });
 
+server.use(
+  jsonServer.rewriter({
+    "/api/*": "/$1",
+    "/blog/:resource/:id/show": "/:resource/:id",
+  })
+);
+
 // To handle POST, PUT and PATCH you need to use a body-parser
 // You can use the one used by JSON Server
 server.use(jsonServer.bodyParser);
@@ -57,3 +64,5 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log("JSON Server is running");
 });
+
+module.exports = server;
