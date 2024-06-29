@@ -1,0 +1,4 @@
+POST http://localhost:3001/api/employees
+Content-Type: multipart/form-data
+
+{"positions":[{"toolLanguages":[{"images":[],"description":"fgdsdf","to":2024,"from":2017,"displayOrder":0,"toolLanguageResourceId":1}],"displayOrder":0,"positionResourceId":1}],"name":"Linh Linh"}

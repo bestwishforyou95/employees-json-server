@@ -1,8 +1,14 @@
 const jsonServer = require("json-server");
 const qs = require("qs");
 const server = jsonServer.create();
-const router = jsonServer.router("db.json");
+const router = jsonServer.router(
+  JSON.parse(fs.readFileSync(path.join("db.json")))
+);
 const middlewares = jsonServer.defaults();
+const path = require("path");
+// const multer = require("multer");
+
+// const upload = multer({ dest: "uploads/" });
 
 // Set default middlewares (logger, static, cors and no-cache)
 server.use(middlewares);
@@ -22,6 +28,32 @@ server.use(
 // To handle POST, PUT and PATCH you need to use a body-parser
 // You can use the one used by JSON Server
 server.use(jsonServer.bodyParser);
+
+// server.post('/api/employees', upload.single('images'), (req, res) => {
+//   const employees = router.db.get('employees');
+//   const newEmployee = {
+//     ...req.body,
+//     id: employees.size().value() + 1,
+//     images: [
+//       {
+//         data: fs.readFileSync(req.file.path).toString('base64'),
+//         displayOrder: 0
+//       }
+//     ]
+//   };
+
+//   req.files.map(file=>{
+
+//     Object.assign(file, {
+//       data: fs.readFileSync(file.path).toString('base64'),
+//       displayOrder: 0
+//     })
+//   })
+//   employees.push(newEmployee).write();
+//   fs.unlinkSync(req.file.path); // Remove the file after reading it
+//   res.status(201).json(newEmployee);
+// });
+
 server.use((req, res, next) => {
   if (req.method === "POST") {
     req.body.createdAt = Date.now();
@@ -62,7 +94,7 @@ router.render = (req, res) => {
 
 // Use default router
 server.use(router);
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log("JSON Server is running");
 });
