@@ -5,15 +5,7 @@ const qs = require("qs");
 const fs = require("fs");
 const path = require("path");
 const server = jsonServer.create();
-
-// Copy db.json to /tmp directory if it doesn't exist
-const dbFilePath = path.join("/tmp", "db.json");
-const sourceDbFilePath = path.join(__dirname, "../db.json");
-
-if (!fs.existsSync(dbFilePath)) {
-  fs.copyFileSync(sourceDbFilePath, dbFilePath);
-}
-const router = jsonServer.router(dbFilePath);
+const router = jsonServer.router(path.resolve("/tmp/db.json"));
 
 const middlewares = jsonServer.defaults();
 
@@ -61,13 +53,6 @@ server.post("/employees", upload.array("files"), (req, res) => {
   newEmployee.createdAt = Date.now();
   newEmployee.updatedAt = Date.now();
   employees.push(newEmployee).write();
-
-  const dbFilePath = path.join("/tmp", "db.json");
-  const sourceDbFilePath = path.join(__dirname, "../db.json");
-
-  if (fs.existsSync(dbFilePath)) {
-    fs.copyFileSync(dbFilePath, sourceDbFilePath);
-  }
 
   res.status(200).json(newEmployee);
 });
