@@ -23,6 +23,14 @@ server.use(
   })
 );
 
+// Copy db.json to /tmp directory if it doesn't exist
+const dbFilePath = path.join("/tmp", "db.json");
+const sourceDbFilePath = path.join(__dirname, "../db.json");
+
+if (!fs.existsSync(dbFilePath)) {
+  fs.copyFileSync(sourceDbFilePath, dbFilePath);
+}
+
 // Configure multer for parsing multipart/form-data
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
