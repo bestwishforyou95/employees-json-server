@@ -20,7 +20,7 @@ server.get("/echo", (req, res) => {
 server.use(
   jsonServer.rewriter({
     "/api/*": "/$1",
-    "/employees/:resource/:id/show": "/:resource/:id",
+    "/api/employees/:resource/:id/show": "/:resource/:id",
   })
 );
 
