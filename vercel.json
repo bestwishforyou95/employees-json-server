@@ -1,18 +1,14 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/main.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["db.json", "uploads/*"]
-      }
+  "functions": {
+    "api/main.js": {
+      "memory": 1024,
+      "includeFiles": "db.json"
     }
-  ],
-  "routes": [
+  },
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "api/main.js"
+      "source": "/(.*)",
+      "destination": "api/main.js"
     }
   ]
 }
