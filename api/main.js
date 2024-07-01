@@ -5,15 +5,8 @@ const qs = require("qs");
 const fs = require("fs");
 const path = require("path");
 const server = jsonServer.create();
-
-// Copy db.json to /tmp directory if it doesn't exist
-const dbFilePath = path.join("/tmp", "db.json");
-const sourceDbFilePath = path.join(__dirname, "../db.json");
-
-if (!fs.existsSync(dbFilePath)) {
-  fs.copyFileSync(sourceDbFilePath, dbFilePath);
-}
-const router = jsonServer.router(dbFilePath);
+const db = JSON.parse(fs.readFileSync(path.join(__dirname, "db.json")));
+const router = jsonServer.router(db);
 
 const middlewares = jsonServer.defaults();
 
