@@ -81,6 +81,13 @@ server.use(jsonServer.bodyParser);
 
 server.use((req, res, next) => {
   if (req.method === "POST") {
+    console.log(req.headers);
+    if (
+      req.headers["content-type"].includes("multipart/form-data") &&
+      req.body.data
+    ) {
+      req.body = { ...JSON.parse(req.body.data) };
+    }
     req.body.createdAt = Date.now();
     req.body.updatedAt = Date.now();
   } else if (req.method === "PATCH" || req.method === "PUT") {
