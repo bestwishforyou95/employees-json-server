@@ -62,6 +62,13 @@ server.post("/employees", upload.array("files"), (req, res) => {
   newEmployee.updatedAt = Date.now();
   employees.push(newEmployee).write();
 
+  const dbFilePath = path.join("/tmp", "db.json");
+  const sourceDbFilePath = path.join(__dirname, "../db.json");
+
+  if (fs.existsSync(dbFilePath)) {
+    fs.copyFileSync(dbFilePath, sourceDbFilePath);
+  }
+
   res.status(200).json(newEmployee);
 });
 
