@@ -5,6 +5,15 @@ const qs = require("qs");
 const fs = require("fs");
 const path = require("path");
 const server = jsonServer.create();
+
+// Copy db.json to /tmp directory if it doesn't exist
+const dbFilePath = path.join("/tmp", "db.json");
+const sourceDbFilePath = path.join(__dirname, "../db.json");
+
+if (!fs.existsSync(dbFilePath)) {
+  fs.copyFileSync(sourceDbFilePath, dbFilePath);
+}
+
 const router = jsonServer.router(path.join(__dirname, "tmp/db.json"));
 const middlewares = jsonServer.defaults();
 
@@ -22,14 +31,6 @@ server.use(
     "/blog/:resource/:id/show": "/:resource/:id",
   })
 );
-
-// Copy db.json to /tmp directory if it doesn't exist
-const dbFilePath = path.join("/tmp", "db.json");
-const sourceDbFilePath = path.join(__dirname, "../db.json");
-
-if (!fs.existsSync(dbFilePath)) {
-  fs.copyFileSync(sourceDbFilePath, dbFilePath);
-}
 
 // Configure multer for parsing multipart/form-data
 const storage = multer.diskStorage({
