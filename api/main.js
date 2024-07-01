@@ -39,23 +39,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// // Use multer to handle multipart/form-data file uploads
-// server.post("/employees", upload.array("files"), (req, res) => {
-//   const employees = router.db.get("employees");
-//   let newEmployee = null;
-//   if (req.body.data) {
-//     newEmployee = { ...JSON.parse(req.body.data) };
-//   } else {
-//     newEmployee = req.body;
-//   }
-//   newEmployee.id = employees.size().value() + 1;
-//   newEmployee.createdAt = Date.now();
-//   newEmployee.updatedAt = Date.now();
-//   employees.push(newEmployee).write();
-
-//   res.status(200).json(newEmployee);
-// });
-
 // Use multer to handle multipart/form-data file uploads
 server.post("/employees/uploads", upload.array("files"), (req, res) => {
   if (!req.files || req.files.length === 0) {
@@ -89,12 +72,6 @@ server.use((req, res, next) => {
     }
     req.body.createdAt = Date.now();
     req.body.updatedAt = Date.now();
-    if (req.url === "/employees") {
-      const employees = router.db.get("employees");
-      req.body.id = employees.size().value() + 1;
-      employees.push(req.body).write();
-      return res.status(200).json(req.body);
-    }
   } else if (req.method === "PATCH" || req.method === "PUT") {
     req.body.updatedAt = Date.now();
   }
