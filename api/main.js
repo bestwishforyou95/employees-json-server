@@ -5,9 +5,7 @@ const qs = require("qs");
 const fs = require("fs");
 const path = require("path");
 const server = jsonServer.create();
-const router = jsonServer.router(
-  fs.readFileSync(path.join(__dirname, "../db.json"))
-);
+const router = jsonServer.router(path.join(__dirname, "../db.json"));
 const middlewares = jsonServer.defaults();
 
 // Set default middlewares (logger, static, cors and no-cache)
