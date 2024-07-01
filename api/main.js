@@ -6,7 +6,6 @@ const fs = require("fs");
 const path = require("path");
 const server = jsonServer.create();
 const router = jsonServer.router("db.json");
-
 const middlewares = jsonServer.defaults();
 
 // Set default middlewares (logger, static, cors and no-cache)
