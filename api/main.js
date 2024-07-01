@@ -43,6 +43,8 @@ const upload = multer({ storage: storage });
 
 // // Use multer to handle multipart/form-data file uploads
 server.post("/employees", upload.array("files"), (req, res) => {
+  const db = JSON.parse(fs.readFileSync(path.join(__dirname, "../db.json")));
+  router = jsonServer.router(db);
   const employees = router.db.get("employees");
   let newEmployee = null;
   if (req.body.data) {
