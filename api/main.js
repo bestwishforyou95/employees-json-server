@@ -5,7 +5,7 @@ const qs = require("qs");
 const fs = require("fs");
 const path = require("path");
 const server = jsonServer.create();
-const router = jsonServer.router("db.json");
+const router = jsonServer.router(path.join(__dirname, "../db.json"));
 const middlewares = jsonServer.defaults();
 
 // Set default middlewares (logger, static, cors and no-cache)
@@ -26,7 +26,7 @@ server.use(
 // Configure multer for parsing multipart/form-data
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join("/tmp", "cdn");
+    const uploadPath = path.join(__dirname, "../tmp/cdn");
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -63,14 +63,14 @@ server.post("/employees/uploads", upload.array("files"), (req, res) => {
   }
   const filePaths = req.files.map((file, index) => ({
     id: index + 1,
-    cdnUrl: `/api/tmp/cdn/${file.filename}`,
+    cdnUrl: `/tmp/cdn/${file.filename}`,
     displayOrder: index,
   }));
   res.status(200).json({ files: filePaths });
 });
 
 // Serve static files from the 'cdn' directory
-server.use("cdn", express.static(path.join("/tmp", "cdn")));
+server.use("/tmp/cdn", express.static(path.join(__dirname, "../tmp/cdn")));
 
 // Use multer before jsonServer.bodyParser to handle multipart/form-data
 server.use(upload.none());
