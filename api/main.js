@@ -5,8 +5,7 @@ const qs = require("qs");
 const fs = require("fs");
 const path = require("path");
 const server = jsonServer.create();
-let db = JSON.parse(fs.readFileSync(path.join(__dirname, "../db.json")));
-let router = jsonServer.router(db);
+const router = jsonServer.router("db.json");
 
 const middlewares = jsonServer.defaults();
 
@@ -21,7 +20,7 @@ server.get("/echo", (req, res) => {
 server.use(
   jsonServer.rewriter({
     "/api/*": "/$1",
-    "/blog/:resource/:id/show": "/:resource/:id",
+    "/employees/:employeeId": "/:employeeId",
   })
 );
 
@@ -43,8 +42,6 @@ const upload = multer({ storage: storage });
 
 // // Use multer to handle multipart/form-data file uploads
 server.post("/employees", upload.array("files"), (req, res) => {
-  db = JSON.parse(fs.readFileSync(path.join(__dirname, "../db.json")));
-  router = jsonServer.router(db);
   const employees = router.db.get("employees");
   let newEmployee = null;
   if (req.body.data) {
