@@ -13,7 +13,7 @@ const sourceDbFilePath = path.join(__dirname, "../db.json");
 if (!fs.existsSync(dbFilePath)) {
   fs.copyFileSync(sourceDbFilePath, dbFilePath);
 }
-const router = jsonServer.router(path.resolve("/tmp/db.json"));
+const router = jsonServer.router(path.resolve(dbFilePath));
 
 const middlewares = jsonServer.defaults();
 
