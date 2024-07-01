@@ -17,7 +17,7 @@ const sourceDbFilePath = path.join(__dirname, "../db.json");
 if (!fs.existsSync(dbFilePath)) {
   fs.copyFileSync(sourceDbFilePath, dbFilePath);
 }
-const router = jsonServer.router("db.json");
+const router = jsonServer.router(dbFilePath);
 
 // Add custom routes before JSON Server router
 server.get("/echo", (req, res) => {
