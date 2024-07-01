@@ -1,15 +1,12 @@
 const jsonServer = require("json-server");
+const express = require("express");
+const multer = require("multer");
 const qs = require("qs");
-const server = jsonServer.create();
-const path = require("path");
 const fs = require("fs");
-const router = jsonServer.router(
-  JSON.parse(fs.readFileSync(path.join("db.json")))
-);
+const path = require("path");
+const server = jsonServer.create();
+const router = jsonServer.router("db.json");
 const middlewares = jsonServer.defaults();
-// const multer = require("multer");
-
-// const upload = multer({ dest: "uploads/" });
 
 // Set default middlewares (logger, static, cors and no-cache)
 server.use(middlewares);
@@ -26,34 +23,61 @@ server.use(
   })
 );
 
+// Configure multer for parsing multipart/form-data
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, "../cdn");
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath);
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// // Use multer to handle multipart/form-data file uploads
+server.post("/employees", upload.array("files"), (req, res) => {
+  const employees = router.db.get("employees");
+  let newEmployee = null;
+  if (req.body.data) {
+    newEmployee = { ...JSON.parse(req.body.data) };
+  } else {
+    newEmployee = req.body;
+  }
+  newEmployee.id = employees.size().value() + 1;
+  newEmployee.createdAt = Date.now();
+  newEmployee.updatedAt = Date.now();
+  employees.push(newEmployee).write();
+
+  res.status(200).json(newEmployee);
+});
+
+// Use multer to handle multipart/form-data file uploads
+server.post("/employees/uploads", upload.array("files"), (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: "No files uploaded" });
+  }
+  const filePaths = req.files.map((file, index) => ({
+    id: index + 1,
+    cdnUrl: `/cdn/${file.filename}`,
+    displayOrder: index,
+  }));
+  res.status(200).json({ files: filePaths });
+});
+
+// Serve static files from the 'cdn' directory
+server.use("cdn", express.static(path.join(__dirname, "../cdn")));
+
+// Use multer before jsonServer.bodyParser to handle multipart/form-data
+server.use(upload.none());
+
 // To handle POST, PUT and PATCH you need to use a body-parser
 // You can use the one used by JSON Server
 server.use(jsonServer.bodyParser);
-
-// server.post('/api/employees', upload.single('images'), (req, res) => {
-//   const employees = router.db.get('employees');
-//   const newEmployee = {
-//     ...req.body,
-//     id: employees.size().value() + 1,
-//     images: [
-//       {
-//         data: fs.readFileSync(req.file.path).toString('base64'),
-//         displayOrder: 0
-//       }
-//     ]
-//   };
-
-//   req.files.map(file=>{
-
-//     Object.assign(file, {
-//       data: fs.readFileSync(file.path).toString('base64'),
-//       displayOrder: 0
-//     })
-//   })
-//   employees.push(newEmployee).write();
-//   fs.unlinkSync(req.file.path); // Remove the file after reading it
-//   res.status(201).json(newEmployee);
-// });
 
 server.use((req, res, next) => {
   if (req.method === "POST") {
@@ -71,7 +95,7 @@ server.use((req, res, next) => {
 });
 
 router.render = (req, res) => {
-  //check GET  with pagination
+  //check GET with pagination
   const headers = res.getHeaders();
   const totalCountHeader = headers["x-total-count"];
   if (req.method === "GET" && totalCountHeader) {
