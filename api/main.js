@@ -5,11 +5,19 @@ const qs = require("qs");
 const fs = require("fs");
 const path = require("path");
 const server = jsonServer.create();
-const router = jsonServer.router("db.json");
 const middlewares = jsonServer.defaults();
 
 // Set default middlewares (logger, static, cors and no-cache)
 server.use(middlewares);
+
+// Copy db.json to /tmp directory if it doesn't exist
+const dbFilePath = path.join("/tmp", "db.json");
+const sourceDbFilePath = path.join(__dirname, "../db.json");
+
+if (!fs.existsSync(dbFilePath)) {
+  fs.copyFileSync(sourceDbFilePath, dbFilePath);
+}
+const router = jsonServer.router("db.json");
 
 // Add custom routes before JSON Server router
 server.get("/echo", (req, res) => {
