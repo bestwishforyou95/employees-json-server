@@ -81,7 +81,6 @@ server.use(jsonServer.bodyParser);
 
 server.use((req, res, next) => {
   if (req.method === "POST") {
-    console.log(req.headers);
     if (
       req.headers["content-type"].includes("multipart/form-data") &&
       req.body.data
@@ -90,6 +89,12 @@ server.use((req, res, next) => {
     }
     req.body.createdAt = Date.now();
     req.body.updatedAt = Date.now();
+    if (req.url === "/employees") {
+      const employees = router.db.get("employees");
+      req.body.id = employees.size().value() + 1;
+      employees.push(req.body).write();
+      return res.status(200).json(req.body);
+    }
   } else if (req.method === "PATCH" || req.method === "PUT") {
     req.body.updatedAt = Date.now();
   }
